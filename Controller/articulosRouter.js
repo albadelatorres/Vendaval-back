@@ -1,6 +1,8 @@
 const express = require("express");
 const articulosRouter = express.Router();
 const Articulos = require("../Model/articulos");
+const Pujas = require("../Model/pujas");
+
 
 // Validar datos del artículo
 function validateArticuloData(req, res, next) {
@@ -31,7 +33,7 @@ articulosRouter.get("/", async (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
- 
+
 // GET BY ID
 articulosRouter.get("/:id", async (req, res) => {
     try {
@@ -78,7 +80,7 @@ articulosRouter.put("/:id", validateArticuloData, async (req, res) => {
 });
 
 // DELETE
-articulosRouter.delete("/:id", async (req, res) => { 
+articulosRouter.delete("/:id", async (req, res) => {
     try {
         const articulo = await Articulos.findByIdAndDelete(req.params.id);
         if (!articulo) {
@@ -87,6 +89,25 @@ articulosRouter.delete("/:id", async (req, res) => {
         res.status(204).send();
     } catch (error) {
         res.status(500).json({ message: error.message });
+    }
+});
+
+//Puja mas alta
+articulosRouter.get('/:id_articulo/puja_max', async (req, res) => {
+    try {
+        const { id_articulo } = req.params;
+        const pujaMasGrande = await Pujas.findOne({ id_articulo })
+            .sort({ cantidad_ofrecida: -1 })
+            .limit(1);
+
+        if (!pujaMasGrande) {
+            return res.status(200).json(null); // o un objeto indicando que no hay pujas
+        }
+
+        res.status(200).json(pujaMasGrande);
+    } catch (error) {
+        console.error("Error al obtener la puja más grande:", error);
+        res.status(500).json({ error: 'Error interno del servidor' });
     }
 });
 

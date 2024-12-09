@@ -41,8 +41,9 @@ pujasRouter.get("/:id", async (req, res) => {
 
 // CREATE
 pujasRouter.post("/", validatePujaData, async (req, res) => {
-    const {comprador, cantidad_ofrecida } = req.body;
+    const {id_articulo,comprador, cantidad_ofrecida } = req.body;
     const puja = new Pujas({
+        id_articulo,
         comprador,
         cantidad_ofrecida
     });
